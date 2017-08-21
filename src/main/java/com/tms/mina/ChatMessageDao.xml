@@ -1,0 +1,31 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ChatMessageDao">
+    
+     <resultMap type="com.tms.entity.ChatMessage" id="ChatMessage">
+        <!-- 用id属性来映射主键字段 -->
+        <id property="cid" column="cid"/>
+        <!-- 用result属性来映射非主键字段 -->
+        <result property="fromWhom" column="from_whom"/>
+        <result property="toWhom" column="to_whom"/>
+        <result property="content" column="content"/>
+        <result property="time" column="time"/>
+        <result property="type" column="type"/>
+        <result property="status" column="status"/>
+     </resultMap>
+  
+    <insert id="save" parameterType="com.tms.entity.ChatMessage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO chat (content,from_whom,to_whom,time,type,status)
+        VALUES (#{content},#{fromWhom},#{toWhom},#{time},#{type},#{status})
+    </insert>
+
+    <select id="getUnSentMessages" parameterType="String" resultMap="ChatMessage">
+        select cid,content,from_whom,to_whom,time,type,status
+        from chat where to_whom = #{toWhom} and status = 0;        
+    </select>        
+    
+    <update id="update" parameterType="com.tms.entity.ChatMessage">
+        UPDATE  chat set status = #{status} where cid = #{cid}
+    </update>
+</mapper>

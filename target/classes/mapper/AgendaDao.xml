@@ -1,0 +1,73 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tms.dao.AgendaDao">
+    
+    <resultMap type="com.tms.entity.Agenda" id="agenda">        
+        <!-- 用id属性来映射主键字段 -->
+        <id property="id" column="id"/>
+        <!-- 用result属性来映射非主键字段 -->
+        <result property="content" column="content"/>
+        <result property="userId" column="user_id"/>
+        <result property="time" column="time"/>
+        <result property="luckyMoney" column="lucky_money"/>
+        <result property="status" column="astuas"/>
+        <association property="user" javaType="com.tms.entity.User">  
+            <id property="id" column="uid"/>  
+            <result property="username" column="username"/>  
+            <result property="truename" column="truename"/> 
+        </association>
+     </resultMap>
+    
+    <insert id="create" parameterType="com.tms.entity.Agenda" >
+        INSERT ignore into agenda(content,time,user_id,lucky_money,status)
+        values(#{agenda.content},#{agenda.time},#{agenda.userId},#{agenda.luckyMoney},#{agenda.status})
+    </insert>
+    
+    <update id="delete" parameterType="int" >
+       UPDATE agenda SET status = -1
+        WHERE id = #{agendaId}
+    </update>
+    
+    <update id="update" parameterType="com.tms.entity.Agenda" >
+        UPDATE agenda SET content = #{agenda.content},user_id = #{agenda.userId},time = #{agenda.time},status = #{agenda.status}
+        WHERE id = #{agenda.id}
+    </update>
+    
+    <select id="search" resultType="com.tms.entity.Agenda">
+        SELECT * FROM agenda WHERE id = #{taskId}
+    </select>        
+    
+    <select id="findAll" parameterType="HashMap" resultMap="agenda">
+        <if test="keyWord==null">
+            SELECT agenda.id,agenda.content,agenda.user_id, agenda.time ,
+            		user.id as uid,user.truename
+            FROM agenda left join user on agenda.user_id = user.id 
+            WHERE agenda.user_id = #{userId} and agenda.status = 0
+        </if>
+        <!-- 
+        <if test="keyWord!=null">
+        SELECT * FROM task WHERE (user = #{user.id} AND title LIKE concat(concat('%',#{keyWord}),'%'))
+        OR (user = #{user.id} AND content LIKE concat(concat('%',#{keyWord}),'%'))
+    	</if>
+    	 -->
+    </select>
+    
+    <select id="findMine" parameterType="com.tms.entity.Agenda" resultType="com.tms.entity.Agenda">
+        <if test="keyWord==null">
+            SELECT * FROM task WHERE who = #{user.id}
+        </if>
+        <if test="keyWord!=null">
+        SELECT * FROM agenda FROM (who = #{user.id} AND title LIKE concat(concat('%',#{keyWord}),'%'))
+        OR (who = #{user.id} AND content LIKE concat(concat('%',#{keyWord}),'%'))
+    	</if>
+    </select>      
+   
+    <select id="findAllLucky" resultMap="agenda">
+        SELECT agenda.id,agenda.content,agenda.user_id, agenda.time ,agenda.lucky_money,agenda.status AS astuas,
+        	user.id AS uid,user.truename
+        FROM agenda left join user on agenda.user_id = user.id 
+        WHERE agenda.status > 0        
+    </select>
+    
+</mapper>

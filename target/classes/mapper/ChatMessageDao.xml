@@ -1,0 +1,13 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tms.dao.ChatMessageDao">
+
+    <insert id="save" parameterType="com.tms.entity.ChatMessage" >
+        INSERT ignore INTO message (content,from_whom,to_whom,time,type,statuas)
+        VALUES (#{message.content},#{message.from_whom},#{message.to_whom},#{message.time},#{message.type},#{message.status})
+    </insert>
+
+    
+   
+</mapper>
